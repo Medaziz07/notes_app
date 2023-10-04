@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:noteapps/auth/login.dart';
 import 'package:noteapps/auth/signup.dart';
 import 'package:noteapps/homepage.dart';
+import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,10 +36,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: (FirebaseAuth.instance.currentUser != null &&
+              FirebaseAuth.instance.currentUser!.emailVerified)
+          ? HomePage()
+          : LoginPage(),
       routes: {
         "signup": (context) => SignUpPage(),
-        "login": (context) => LoginPage()
+        "login": (context) => LoginPage(),
+        "homepage": (context) => HomePage(),
       },
     );
   }
