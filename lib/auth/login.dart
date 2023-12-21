@@ -29,18 +29,17 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
 
     // Once signed in, return the UserCredential
     await FirebaseAuth.instance.signInWithCredential(credential);
-
     Navigator.of(context).pushNamedAndRemoveUntil('homepage', (route) => false);
   }
 
@@ -119,21 +118,41 @@ class _LoginPageState extends State<LoginPage> {
                       hinttext: "Enter Your password",
                       mycontroller: password,
                       validator: ((val) {
-                        if (val == "") {
+                        if (val.toString().isEmpty) {
                           return 'can"t be empty';
                         }
                       })),
                   SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forget  Password ?',
-                        style: TextStyle(fontSize: 14, color: Colors.blue),
-                      )
-                    ],
+                  InkWell(
+                    onTap: () async {
+                      try {
+                        if (email.toString().isEmpty) {
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.info,
+                            animType: AnimType.rightSlide,
+                            title: 'Dialog Title',
+                            desc: 'Email can"t be null',
+                          ).show();
+                        }
+
+                        await FirebaseAuth.instance
+                            .sendPasswordResetEmail(email: email.text);
+                      } on Exception catch (e) {
+                        print("$e");
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Forget  Password ?',
+                          style: TextStyle(fontSize: 14, color: Colors.blue),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -153,15 +172,12 @@ class _LoginPageState extends State<LoginPage> {
                     if (credential.user!.emailVerified) {
                       Navigator.of(context).pushReplacementNamed("homepage");
                     } else {
-                      FirebaseAuth.instance.currentUser!
-                          .sendEmailVerification();
-
                       AwesomeDialog(
                         context: context,
                         dialogType: DialogType.info,
                         animType: AnimType.rightSlide,
                         title: 'Dialog Title',
-                        desc: 'Dialog description here.............',
+                        desc: 'verification',
                         btnCancelOnPress: () {},
                         btnOkOnPress: () {},
                       ).show();
@@ -208,7 +224,13 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => signInWithGoogle(),
+                    onTap: () {
+                      try {
+                        signInWithGoogle();
+                      } on Exception catch (e) {
+                        print("google singin problem");
+                      }
+                    },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

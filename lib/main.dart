@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:noteapps/auth/login.dart';
 import 'package:noteapps/auth/signup.dart';
+import 'package:noteapps/categories/add.dart';
 import 'package:noteapps/homepage.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +36,14 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          appBarTheme: AppBarTheme(
+              backgroundColor: Colors.grey[50],
+              titleTextStyle: const TextStyle(
+                  color: Colors.orange,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold),
+              iconTheme: const IconThemeData(color: Colors.orange))),
       debugShowCheckedModeBanner: false,
       home: (FirebaseAuth.instance.currentUser != null &&
               FirebaseAuth.instance.currentUser!.emailVerified)
@@ -44,6 +53,7 @@ class _MyAppState extends State<MyApp> {
         "signup": (context) => SignUpPage(),
         "login": (context) => LoginPage(),
         "homepage": (context) => HomePage(),
+        "add": (context) => AddCategory(),
       },
     );
   }
